@@ -14,17 +14,17 @@ from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, qRgb, QPen, QBitmap, 
 import os
 from matplotlib import pyplot as plt
 import datetime
-from tools import error_message, now_string, prepend, colortable, get_ram, get_process
+from .tools import error_message, now_string, prepend, colortable, get_ram, get_process
 import copy
-from zernike import Reconstructor
+from .zernike import Reconstructor
 import cProfile
 import scipy.io as sio
-from poke_analysis import save_modes_chart
+from .poke_analysis import save_modes_chart
 from ctypes import CDLL,c_void_p
-from search_boxes import SearchBoxes
-from reference_generator import ReferenceGenerator
+from .search_boxes import SearchBoxes
+from .reference_generator import ReferenceGenerator
 import ciao_config as ccfg
-from frame_timer import FrameTimer
+from .frame_timer import FrameTimer
 
 class MirrorController(object):
     def __init__(self):
@@ -75,7 +75,7 @@ class MirrorControllerPython(MirrorController):
         try:
             assert n_actuators_queried==ccfg.mirror_n_actuators
         except AssertionError as ae:
-            print 'Number of actuator disagreement.'
+            print('Number of actuator disagreement.')
         self.command[:] = 0.0 # this doesn't really matter
         
     def set(self,vec):
@@ -98,7 +98,7 @@ class MirrorControllerPythonOld(MirrorController):
         try:
             assert n_actuators_queried==ccfg.mirror_n_actuators
         except AssertionError as ae:
-            print 'Number of actuator disagreement.'
+            print('Number of actuator disagreement.')
         self.command[:] = 0.0 # this doesn't really matter
         
     def set(self,vec):
@@ -116,20 +116,20 @@ class Mirror:
         
         try:
             self.controller = MirrorControllerPython()
-            print 'Mirror python initialization succeeded.'
+            print('Mirror python initialization succeeded.')
         except Exception as e:
-            print 'Mirror python initialization failed:',e
+            print('Mirror python initialization failed:',e)
             try:
                 self.controller = MirrorControllerPythonOld()
-                print 'Mirror python (old style) initialization succeeded.'
+                print('Mirror python (old style) initialization succeeded.')
             except Exception as e:
-                print 'Mirror python (old style) initialization failed:',e
+                print('Mirror python (old style) initialization failed:',e)
                 try:
                     self.controller = MirrorControllerCtypes()
-                    print 'Mirror c initialization succeeded.'
+                    print('Mirror c initialization succeeded.')
                 except Exception as e:
-                    print e
-                    print 'No mirror driver found. Using virtual mirror.'
+                    print(e)
+                    print('No mirror driver found. Using virtual mirror.')
                     self.controller = MirrorController()
             
         self.mirror_mask = np.loadtxt(ccfg.mirror_mask_filename)
@@ -153,11 +153,11 @@ class Mirror:
         self.frame_timer.tick()
 
     def pause(self):
-        print 'mirror paused'
+        print('mirror paused')
         self.paused = True
 
     def unpause(self):
-        print 'mirror unpaused'
+        print('mirror unpaused')
         self.paused = False
 
     def send(self):

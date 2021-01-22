@@ -55,7 +55,7 @@ def save_wav(file_name,buf):
 try:
     os.mkdir(ccfg.audio_directory)
 except Exception as e:
-    print e
+    print(e)
 
 # use middle C scale for basis, and then multipliers (0.125, 0.25, 0.5, 1.0, 2.0, 4.0) for different octaves
 
@@ -74,4 +74,4 @@ for subscript in octave_subscripts:
         fn = os.path.join(ccfg.audio_directory,'%s_%d.wav'%(n,subscript))
         tone = make_sinewave(freq=f*multiplier)
         save_wav(fn,tone)
-        print 'Writing tone w/ frequency %0.1f to %s'%(f,fn)
+        print('Writing tone w/ frequency %0.1f to %s'%(f,fn))

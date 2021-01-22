@@ -1,7 +1,7 @@
 import numpy as np
 import ciao_config as ccfg
 import os,sys
-from tools import now_string
+from .tools import now_string
 
 class ReferenceGenerator:
     def __init__(self,camera,mask,x_offset=0.0,y_offset=0.0,spot_half_width=5,window_spots=False):
@@ -64,8 +64,8 @@ class ReferenceGenerator:
         
     def make_coords(self):
         outfn = os.path.join(ccfg.reference_directory,'%s_coords.txt'%now_string())
-        print 'Reference coordinates saved in %s'%outfn
-        print 'Please add the following line to config.py:'
-        print "reference_coordinates_filename = '%s'"%outfn
+        print('Reference coordinates saved in %s'%outfn)
+        print('Please add the following line to config.py:')
+        print("reference_coordinates_filename = '%s'"%outfn)
         np.savetxt(outfn,self.xy)
         

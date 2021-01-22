@@ -14,11 +14,11 @@ from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, qRgb, QPen, QBitmap, 
 import os
 from matplotlib import pyplot as plt
 import datetime
-from tools import error_message, now_string, prepend, colortable, get_ram, get_process
-from zernike import Zernike
-from search_boxes import SearchBoxes
-from frame_timer import FrameTimer
-from reference_generator import ReferenceGenerator
+from .tools import error_message, now_string, prepend, colortable, get_ram, get_process
+from .zernike import Zernike
+from .search_boxes import SearchBoxes
+from .frame_timer import FrameTimer
+from .reference_generator import ReferenceGenerator
 
 class Simulator:
 
@@ -144,10 +144,10 @@ class Simulator:
         
         try:
             self.actuator_basis = np.load(cfn)
-            print 'Loading cached actuator basis set...'
+            print('Loading cached actuator basis set...')
         except Exception as e:
             actuator_basis = []
-            print 'Building actuator basis set...'
+            print('Building actuator basis set...')
             for x,y in zip(ax,ay):
                 xx = self.XX - x
                 yy = self.YY - y
@@ -167,10 +167,10 @@ class Simulator:
         self.zernike = Zernike()
         try:
             self.zernike_basis = np.load(zfn)
-            print 'Loading cached zernike basis set...'
+            print('Loading cached zernike basis set...')
         except Exception as e:
             zernike_basis = []
-            print 'Building zernike basis set...'
+            print('Building zernike basis set...')
             #zernike = Zernike()
             for z in range(self.n_zernike_terms):
                 surf = self.zernike.get_j_surface(z,self.XX,self.YY)
@@ -358,7 +358,7 @@ class Simulator:
             plt.pause(.5)
 
     def close(self):
-        print 'Closing simulator.'
+        print('Closing simulator.')
         
 if __name__=='__main__':
 
@@ -366,7 +366,7 @@ if __name__=='__main__':
     for k in range(100):
         sim.update()
         im = sim.get_image()
-        print k,im.mean()
+        print(k,im.mean())
         plt.cla()
         plt.imshow(im)
         plt.pause(.1)

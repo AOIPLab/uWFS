@@ -43,14 +43,14 @@ def colortable(colormap_name):
     try:
         cmapobj = plt.get_cmap(colormap_name)
     except AttributeError as ae:
-        print '\'%s\' is not a valid colormap name'%colormap_name
-        print 'using \'bone\' instead'
+        print('\'%s\' is not a valid colormap name'%colormap_name)
+        print('using \'bone\' instead')
         cmapobj = plt.get_cmap('bone')
     ncolors = cmapobj.N
 
     cmap = np.uint8(cmapobj(range(ncolors))[:,:3]*255.0)
     table = []
-    for row in xrange(cmap.shape[0]):
+    for row in range(cmap.shape[0]):
         table.append(qRgb(cmap[row,0],cmap[row,1],cmap[row,2]))
 
     if colorcode_saturated:

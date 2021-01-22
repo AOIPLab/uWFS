@@ -14,18 +14,18 @@ from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, qRgb, QPen, QBitmap, 
 import os
 from matplotlib import pyplot as plt
 import datetime
-from tools import error_message, now_string, prepend, colortable, get_ram, get_process
+from .tools import error_message, now_string, prepend, colortable, get_ram, get_process
 import copy
-from zernike import Reconstructor
+from .zernike import Reconstructor
 import cProfile
 import scipy.io as sio
-from poke_analysis import save_modes_chart
+from .poke_analysis import save_modes_chart
 from ctypes import CDLL,c_void_p
-from search_boxes import SearchBoxes
-from reference_generator import ReferenceGenerator
+from .search_boxes import SearchBoxes
+from .reference_generator import ReferenceGenerator
 import ciao_config as ccfg
-from frame_timer import FrameTimer,BlockTimer
-from poke import Poke
+from .frame_timer import FrameTimer,BlockTimer
+from .poke import Poke
 
 class Loop(QObject):
 
@@ -93,7 +93,7 @@ class Loop(QObject):
         self.mirror.unpause()
         self.sensor.unpause()
         self.paused = False
-        print 'loop unpaused'
+        print('loop unpaused')
 
     def set_safe(self,val):
         self.safe = val
@@ -115,7 +115,7 @@ class Loop(QObject):
             self.update_timer.tick('start')
         if not self.paused:
             if self.verbose>=5:
-                print 'Updating loop.'
+                print('Updating loop.')
 
 
             self.sensor.update()
@@ -165,7 +165,7 @@ class Loop(QObject):
                 if self.verbose>=1:
                     error = self.sensor.error
                     pcount = int(round(error*1e8))
-                    print 'rms'+'.'*pcount
+                    print('rms'+'.'*pcount)
 
                 if self.ready_to_correct:
                     slope_vec = np.hstack((xs,ys))
@@ -180,11 +180,11 @@ class Loop(QObject):
                     
                     if self.verbose>=1:
                         if command.max()>ccfg.mirror_command_max*.99:
-                            print 'actuator saturated'
+                            print('actuator saturated')
                         if command.min()<ccfg.mirror_command_min*.99:
-                            print 'actuator saturated'
+                            print('actuator saturated')
                 else:
-                    print 'not ready to correct'
+                    print('not ready to correct')
 
             self.active_lenslets[:] = current_active_lenslets[:]
 
@@ -241,14 +241,14 @@ class Loop(QObject):
         try:
             self.poke.n_modes = n
         except Exception as e:
-            print e
+            print(e)
 
     def get_n_modes(self):
         out = -1
         try:
             out = self.poke.n_modes
         except Exception as e:
-            print e
+            print(e)
         return out
 
     def get_condition_number(self):
@@ -256,7 +256,7 @@ class Loop(QObject):
         try:
             out = self.poke.cutoff_cond
         except Exception as e:
-            print e
+            print(e)
         if out>2**32:
             out = np.inf
         return out
@@ -372,13 +372,13 @@ class SerialLoop(QObject):
         
     def start(self):
         if self.verbose>=5:
-            print 'Starting loop.'
+            print('Starting loop.')
         
             
     def update(self):
         if not self.paused:
             if self.verbose>=5:
-                print 'Updating loop.'
+                print('Updating loop.')
                 
             if self.closed and self.has_poke():
 
@@ -400,7 +400,7 @@ class SerialLoop(QObject):
                 if self.verbose>=1:
                     error = self.sensor.error
                     pcount = int(round(error*1e8))
-                    print 'rms'+'.'*pcount
+                    print('rms'+'.'*pcount)
                 
                 slope_vec = np.hstack((xs,ys))
                 command = self.gain * np.dot(self.poke.ctrl,slope_vec)
@@ -409,9 +409,9 @@ class SerialLoop(QObject):
 
                 if self.verbose>=1:
                     if command.max()>ccfg.mirror_command_max*.95:
-                        print 'actuator saturated'
+                        print('actuator saturated')
                     if command.min()<ccfg.mirror_command_min*.95:
-                        print 'actuator saturated'
+                        print('actuator saturated')
                 
             self.n = self.n + 1
                 
@@ -457,14 +457,14 @@ class SerialLoop(QObject):
         try:
             self.poke.n_modes = n
         except Exception as e:
-            print e
+            print(e)
 
     def get_n_modes(self):
         out = -1
         try:
             out = self.poke.n_modes
         except Exception as e:
-            print e
+            print(e)
         return out
 
     def get_condition_number(self):
@@ -472,7 +472,7 @@ class SerialLoop(QObject):
         try:
             out = self.poke.cutoff_cond
         except Exception as e:
-            print e
+            print(e)
         return out
             
     def run_poke(self):

@@ -119,22 +119,21 @@ class Zernike:
             outerCoef = n+1
         else:
             outerCoef = 2*(n+1)
-
-
-        srange = range((n-absm)/2+1)
+        
+        srange = range(np.int((n-absm)/2+1))
 
         cdict = {}
 
         for s in srange:
-            jrange = range(((n-absm)/2)-s+1)
+            jrange = range(np.int(((n-absm)/2)-s+1))
             for j in jrange:
 
                 # Subtract 1 from absm to determine range,
                 # only when m<0.
                 if m<0:
-                    krange = range((absm-1)/2+1)
+                    krange = range(np.int((absm-1)/2+1))
                 else:
-                    krange = range(absm/2+1)
+                    krange = range(np.int(absm/2+1))
 
                 for k in krange:
                     # If m==0, k must also be 0;
@@ -198,7 +197,7 @@ class Zernike:
                     # is 0.
                     if ct123:
                         # If we already have this term, add to its coefficient.
-                        if cdict.has_key(termKey):
+                        if termKey in cdict:
                             cdict[termKey] = cdict[termKey] + ct123
                         # If not, add it to the dictionary.
                         else:

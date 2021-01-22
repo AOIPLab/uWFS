@@ -24,7 +24,7 @@ class FrameTimer:
             self.fps = 1.0/self.frame_time
             self.index=0
             if self.verbose:
-                print '%s: %0.1f (ms) %0.1f (ms std) %0.1f (fps)'%(self.label,1000.*self.frame_time,1000.*self.frame_rms,self.fps)
+                print('%s: %0.1f (ms) %0.1f (ms std) %0.1f (fps)'%(self.label,1000.*self.frame_time,1000.*self.frame_rms,self.fps))
 
 
 class BlockTimer:
@@ -41,7 +41,7 @@ class BlockTimer:
             self.tick_dict[label] = [time.time()]
 
     def tock(self):
-        print self.timer_label
+        print(self.timer_label)
         ragged_arr = []
         for label in self.labels:
             ragged_arr.append(self.tick_dict[label])
@@ -62,5 +62,5 @@ class BlockTimer:
         for idx in range(1,len(self.labels)):
             lab1 = self.labels[idx-1]
             lab2 = self.labels[idx]
-            print '%s -> %s: %0.3f ms'%(lab1,lab2,1000.*dt[idx-1])
+            print('%s -> %s: %0.3f ms'%(lab1,lab2,1000.*dt[idx-1]))
         print

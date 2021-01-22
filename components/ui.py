@@ -15,18 +15,18 @@ from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, qRgb, QPen, QBitmap, 
 import os
 from matplotlib import pyplot as plt
 import datetime
-from tools import error_message, now_string, prepend, colortable, get_ram, get_process
+from .tools import error_message, now_string, prepend, colortable, get_ram, get_process
 import copy
-from zernike import Reconstructor
+from .zernike import Reconstructor
 import cProfile
 import scipy.io as sio
-from poke_analysis import save_modes_chart
+from .poke_analysis import save_modes_chart
 from ctypes import CDLL,c_void_p
-from search_boxes import SearchBoxes
-from reference_generator import ReferenceGenerator
+from .search_boxes import SearchBoxes
+from .reference_generator import ReferenceGenerator
 import ciao_config as ccfg
-from frame_timer import FrameTimer,BlockTimer
-from poke import Poke
+from .frame_timer import FrameTimer,BlockTimer
+from .poke import Poke
 import os
 
 # machine epsilon
@@ -38,7 +38,7 @@ eps = np.finfo(float).eps
 try:
     os.mkdir('.gui_settings')
 except Exception as e:
-    print e
+    print(e)
 
 
 class StripChart(QWidget):
@@ -358,7 +358,7 @@ class ZoomDisplay(QWidget):
         try:
             self.display_clim = (self.data.min(),self.data.max())
         except Exception as e:
-            print e
+            print(e)
         self.set_sliders()
 
     def set_sliders(self):
@@ -374,7 +374,7 @@ class ZoomDisplay(QWidget):
         try:
             self.display_clim = np.loadtxt(os.path.join('.gui_settings','clim_%s.txt'%self.name))
         except Exception as e:
-            print e
+            print(e)
             self.display_clim = self.clim
         
     def zoomed(self):
@@ -439,7 +439,7 @@ class ZoomDisplay(QWidget):
             self.label.setPixmap(self.pixmap.scaled(self.label.width(),self.label.height(),Qt.KeepAspectRatio))
             self.display_ratio = float(self.sx)/float(self.label.width())
         except Exception as e:
-            print e
+            print(e)
 
 class UI(QWidget):
 
@@ -470,7 +470,7 @@ class UI(QWidget):
 
 
     def __del__(self):
-        print "hello?"
+        print("hello?")
         self.update_timer.tock()
         
     def keyPressEvent(self,event):

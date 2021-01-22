@@ -38,23 +38,23 @@ class Poke:
         assert self.n_ctrl_stored==len(self.ctrl_key_list)
 
     def print_dict_info(self):
-        print 'N stored:',self.n_ctrl_stored
-        print 'Current dictionary:'
-        print self.ctrl_dict.keys()
-        print 'Current key list:'
-        print self.ctrl_key_list
-        print
+        print('N stored:',self.n_ctrl_stored)
+        print('Current dictionary:')
+        print(self.ctrl_dict.keys())
+        print('Current key list:')
+        print(self.ctrl_key_list)
+        print()
 
     def trim_ctrl_dict(self):
         if self.n_ctrl_stored<=ccfg.ctrl_dictionary_max_size:
             return
         else:
             n_to_remove = self.n_ctrl_stored-ccfg.ctrl_dictionary_max_size
-            print 'Removing %d'%n_to_remove
+            print('Removing %d'%n_to_remove)
             for k in range(n_to_remove):
                 key = self.ctrl_key_list[k]
                 self.print_dict_info()
-                print 'Key to remove: %s'%key
+                print('Key to remove: %s'%key)
                 del self.ctrl_dict[key]
                 self.n_ctrl_stored-=1
                 self.ctrl_key_list.remove(key)
@@ -105,15 +105,15 @@ class Poke:
             cutoff_cond = s[n_modes]/s[0]
             test = np.linalg.pinv(poke,cutoff_cond)
             if np.allclose(test,ctrlmat):
-                print 'Pseudoinverse is correct.'
+                print('Pseudoinverse is correct.')
                 sys.exit()
             else:
-                print 'Pseudoinverse is incorrect.'
+                print('Pseudoinverse is incorrect.')
                 sys.exit()
             
         self.ctrl = ctrlmat
-        print 'SVD %d modes %0.4e'%(self.n_modes,self.cutoff_cond)
+        print('SVD %d modes %0.4e'%(self.n_modes,self.cutoff_cond))
         self.store_ctrl(mask,self.ctrl)
         self.trim_ctrl_dict()
         self.print_dict_info()
-        print
+        print()

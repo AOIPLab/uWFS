@@ -30,7 +30,7 @@ class Beeper:
     #@pyqtSlot()
     def cache_tones(self):
         if self.active:
-            print 'Caching beeper tones...'
+            print('Caching beeper tones...')
             for minmax,tone_string in ccfg.error_tones:
                 key = self.err_to_int(minmax[0])
                 tonefn = os.path.join(ccfg.audio_directory,'%s.wav'%tone_string)
@@ -38,16 +38,16 @@ class Beeper:
                     val = QSound(tonefn)
                     self.tone_dict[key] = val
                 #self.tonepg_dict[key] = pygame.mixer.Sound(tonefn)
-            print 'Done!'
+            print('Done!')
         else:
-            print 'Not caching tones because qtmultimedia failed.'
+            print('Not caching tones because qtmultimedia failed.')
             
     def err_to_int(self,err):
         return int(np.floor(err*1e8))
 
     def beep(self,error_in_nm):
         if self.active:
-            print 1
+            print(1)
             k = self.err_to_int(error_in_nm)
             if k in self.tone_dict.keys() and self.n==0:
                 se = self.tone_dict[k]

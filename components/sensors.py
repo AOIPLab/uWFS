@@ -1,6 +1,6 @@
 import numpy as np
 import time
-import centroid
+from . import centroid
 import sys
 from PyQt5.QtCore import (QThread, QTimer, pyqtSignal, Qt, QPoint, QLine,
                           QMutex, QObject, pyqtSlot)
@@ -14,17 +14,17 @@ from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, qRgb, QPen, QBitmap, 
 import os
 from matplotlib import pyplot as plt
 import datetime
-from tools import error_message, now_string, prepend, colortable, get_ram, get_process
+from .tools import error_message, now_string, prepend, colortable, get_ram, get_process
 import copy
-from zernike import Reconstructor
+from .zernike import Reconstructor
 import cProfile
 import scipy.io as sio
-from poke_analysis import save_modes_chart
+from .poke_analysis import save_modes_chart
 from ctypes import CDLL,c_void_p
-from search_boxes import SearchBoxes
+from .search_boxes import SearchBoxes
 import ciao_config as ccfg
-from frame_timer import FrameTimer,BlockTimer
-from beeper import Beeper
+from .frame_timer import FrameTimer,BlockTimer
+from .beeper import Beeper
 
 class Sensor:
 
@@ -66,7 +66,7 @@ class Sensor:
             xy = np.loadtxt(ccfg.reference_coordinates_filename)
         except Exception as e:
             xy = np.loadtxt(ccfg.reference_coordinates_bootstrap_filename)
-            print 'Bootstrapping with %s'%ccfg.reference_coordinates_bootstrap_filename
+            print('Bootstrapping with %s'%ccfg.reference_coordinates_bootstrap_filename)
             
         self.search_boxes = SearchBoxes(xy[:,0],xy[:,1],ccfg.search_box_half_width)
         self.sensor_mask = np.loadtxt(ccfg.reference_mask_filename)
@@ -128,18 +128,18 @@ class Sensor:
             try:
                 self.sense()
             except Exception as e:
-                print 'Sensor update exception:',e
+                print('Sensor update exception:',e)
             if self.logging:
                 self.log()
                 
         self.frame_timer.tick()
     
     def pause(self):
-        print 'sensor paused'
+        print('sensor paused')
         self.paused = True
 
     def unpause(self):
-        print 'sensor unpaused'
+        print('sensor unpaused')
         self.paused = False
 
     def get_average_background(self):
@@ -394,19 +394,19 @@ class Sensor:
         try:
             self.beeper.beep(self.error)
         except Exception as e:
-            print e
-            print self.error
+            print(e)
+            print(self.error)
             sys.exit()
         
     def record_reference(self):
-        print 'recording reference'
+        print('recording reference')
         self.pause()
         xcent = []
         ycent = []
         for k in range(ccfg.reference_n_measurements):
-            print 'measurement %d of %d'%(k+1,ccfg.reference_n_measurements),
+            print('measurement %d of %d'%(k+1,ccfg.reference_n_measurements),)
             self.sense()
-            print '...done'
+            print('...done')
             xcent.append(self.x_centroids)
             ycent.append(self.y_centroids)
 
@@ -419,7 +419,7 @@ class Sensor:
         x_var = xcent.var(0)
         y_var = ycent.var(0)
         err = np.sqrt(np.mean([x_var,y_var]))
-        print 'reference coordinate error %0.3e px RMS'%err
+        print('reference coordinate error %0.3e px RMS'%err)
         
         self.search_boxes = SearchBoxes(x_ref,y_ref,self.search_boxes.half_width)
         refxy = np.array((x_ref,y_ref)).T

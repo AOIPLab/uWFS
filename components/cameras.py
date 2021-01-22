@@ -5,16 +5,16 @@ import os,sys
 try:
     from pypylon import pylon
 except Exception as e:
-    print e
+    print(e)
 
 try:
     from ximea import xiapi
 except Exception as e:
-    print e
+    print(e)
     
 from ctypes import *
 from ctypes.util import find_library
-import milc
+from . import milc
 from time import time
 
 def get_camera():
@@ -69,8 +69,8 @@ class XimeaCamera:
         try:
             self.set_exposure(ccfg.camera_exposure_us)
         except AttributeError as ae:
-            print ae
-            print "ciao_config.py is missing an entry for exposure time; please put 'camera_exposure_us = 1000' or similar into the ciao_config.py file for your session"
+            print(ae)
+            print("ciao_config.py is missing an entry for exposure time; please put 'camera_exposure_us = 1000' or similar into the ciao_config.py file for your session")
             sys.exit()
         self.camera.start_acquisition()
         self.img = xiapi.Image()
@@ -87,7 +87,7 @@ class XimeaCamera:
         self.camera.close_device()
         
     def set_exposure(self,exposure_us):
-        print exposure_us
+        print(exposure_us)
         self.camera.set_exposure(exposure_us)
         
     def get_exposure(self):
@@ -152,7 +152,7 @@ class AOCameraAce():
 
     _MilImage0 = c_longlong(0)
     _MilImage1 = c_longlong(0)
-    _InitFlag = c_longlong(milc.M_PARTIAL)
+    #_InitFlag = c_longlong(milc.M_PARTIAL)
     #_InitFlagD = c_longlong(milc.M_DEFAULT)
 
 
@@ -183,20 +183,20 @@ class AOCameraAce():
 
         self._mil.MappAllocW(self._InitFlag,byref(self._MilApplication))
         self.printMilError()
-        print 'MIL App Identifier: %d'%self._MilApplication.value
+        print('MIL App Identifier: %d'%self._MilApplication.value)
 
         cSystemName = c_wchar_p('M_SYSTEM_SOLIOS')
         self._mil.MsysAllocW(cSystemName, milc.M_DEFAULT, 
                            self._InitFlag, byref(self._MilSystem))
         self.printMilError()
-        print 'MIL Sys Identifier: %d'%self._MilSystem.value
+        print('MIL Sys Identifier: %d'%self._MilSystem.value)
 
         
         cDcfFn = c_wchar_p(self._cameraFilename)
 
         self._mil.MdigAllocW(self._MilSystem, milc.M_DEFAULT, cDcfFn, milc.M_DEFAULT, byref(self._MilDigitizer))
         self.printMilError()
-        print 'MIL Dig Identifier: %d'%self._MilDigitizer.value
+        print('MIL Dig Identifier: %d'%self._MilDigitizer.value)
 
         nBands = c_longlong(1)
         bufferType = c_longlong(milc.M_SIGNED + 16)
@@ -213,20 +213,20 @@ class AOCameraAce():
             self._mil.MbufAllocColor(self._MilSystem, nBands, self._xSizePx, self._ySizePx, bufferType, bufferAttribute, byref(self._MilImage0))
             self._mil.MbufAllocColor(self._MilSystem, nBands, self._xSizePx, self._ySizePx, bufferType, bufferAttribute, byref(self._MilImage1))
             self.printMilError()
-            print 'MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode
+            print('MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode)
             self._mil.MdigGrabContinuous(self._MilDigitizer,self._MilImage0)
             self.printMilError()
         elif self._mode==1: # double buffer / single grabs
             self._mil.MbufAllocColor(self._MilSystem, nBands, self._xSizePx, self._ySizePx, bufferType, bufferAttribute, byref(self._MilImage0))
             self._mil.MbufAllocColor(self._MilSystem, nBands, self._xSizePx, self._ySizePx, bufferType, bufferAttribute, byref(self._MilImage1))
             self.printMilError()
-            print 'MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode
+            print('MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode)
             self._mil.MdigControlInt64(self._MilDigitizer,milc.M_GRAB_MODE,milc.M_SYNCHRONOUS)
             self._mil.MdigGrab(self._MilDigitizer,self._MilImage0)
         elif self._mode==2: # single buffer / single grabs
             self._mil.MbufAllocColor(self._MilSystem, nBands, self._xSizePx, self._ySizePx, bufferType, bufferAttribute, byref(self._MilImage0))
             self.printMilError()
-            print 'MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode
+            print('MIL Img Identifiers: %d,%d'%(self._MilImage0.value, self._MilImage1.value), self._mode)
             # changing the GRAB_MODE from ASYNCHRONOUS to SYNCHRONOUS seemed to improve the slope responses during the poke matrix
             # acquisition
             self._mil.MdigControlInt64(self._MilDigitizer,milc.M_GRAB_MODE,milc.M_SYNCHRONOUS)
@@ -248,7 +248,7 @@ class AOCameraAce():
 
 
     def close(self):
-        print 'Closing camera...'
+        print('Closing camera...')
         self._mil.MdigHalt(self._MilDigitizer)
         self.printMilError()
         self._mil.MbufFree(self._MilImage0)
@@ -305,8 +305,8 @@ class AOCameraAce():
             
     def printMilError(self):
         err = c_longlong(0)
-        self._mil.MappGetError(2L,byref(err))
-        print 'MIL Error Code: %d'%err.value
+        self._mil.MappGetError(2,byref(err))
+        print('MIL Error Code: %d'%err.value)
     
     def set_exposure(self,exposure_us):
         return

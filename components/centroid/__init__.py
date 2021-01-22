@@ -1,1 +1,1 @@
-from centroid import *
+from .centroid import *
