@@ -11,7 +11,27 @@ try:
     from ximea import xiapi
 except Exception as e:
     print(e)
+   
+try:
+    try:
+        # if on Windows, use the provided setup script to add the DLLs folder to the PATH
+        from windows_setup import configure_path
+        configure_path()
+    except ImportError:
+        configure_path = None
     
+    from thorlabs_tsi_sdk.tl_camera import TLCameraSDK 
+    from thorlabs_tsi_sdk.tl_camera_enums import SENSOR_TYPE
+except Exception as e:
+        print(e)
+
+try:
+    from pyvcam import pvc
+    from pyvcam.camera import Camera
+    from pyvcam import constants as const
+except Exception as e:
+    print(e)
+
 from ctypes import *
 from ctypes.util import find_library
 from . import milc
@@ -24,9 +44,78 @@ def get_camera():
         return AOCameraAce()
     elif ccfg.camera_id.lower()=='ximea':
         return XimeaCamera()
+    elif ccfg.camera_id.lower()=='thorlabscam':
+        return TLCamera()
+    elif ccfg.camera_id.lower()=='pvcam':
+        return PVCam()
     else:
         return SimulatedCamera()
 
+class PVCam:
+    def __init__(self,timeout=500):
+        pvc.init_pvcam()
+        self.cam = [cam for cam in Camera.detect_camera()][0]
+        self.cam.open()
+        self.cam.speed_table_index = 0
+    
+    def get_exposure(self):
+        return self.cam.exp_time
+
+    def set_exposure(self,exposure_us):
+        self.cam.exp_time = exposure_us/1000
+        
+    def get_image(self):
+        frame = self.cam.get_frame().reshape(self.cam.sensor_size[::-1])
+        return frame
+    
+    def close(self):
+        iself.cam.close()
+        pvc.uninit_pvcam()
+
+
+
+class TLCamera:
+    def __init__(self,timeout=500):
+        self.sdk = TLCameraSDK()
+        cameralist = self.sdk.discover_available_cameras()
+        if len(cameralist) == 0:
+            print("Error: no cameras detected!")
+
+        self.camera = self.sdk.open_camera(cameralist[0])
+        #  setup the camera for continuous acquisition
+        self.camera.frames_per_trigger_zero_for_unlimited = 0
+        self.camera.image_poll_timeout_ms = 2000  # 2 second timeout
+        self.camera.arm(2)
+        self.camera.exposure_time_us = 100
+
+        # save these values to place in our custom TIFF tags later
+        bit_depth = self.camera.bit_depth
+        exposure = self.camera.exposure_time_us
+
+        # need to save the image width and height for color processing
+        image_width = self.camera.image_width_pixels
+        image_height = self.camera.image_height_pixels
+        print(image_width)
+        print(image_height)
+        self.image = None
+    
+    def get_image(self):
+        self.camera.issue_software_trigger()
+        frame = self.camera.get_pending_frame_or_null()
+        self.image = frame.image_buffer
+        return self.image
+
+
+    def close(self):
+        self.camera.disarm()
+        return
+
+    def set_exposure(self,exposure_us):
+        self.camera.exposure_time_us = exposure_us
+        return
+
+    def get_exposure(self):
+        return self.camera.exposure_time_us
 
 class PylonCamera:
 
