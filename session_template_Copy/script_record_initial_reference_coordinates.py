@@ -1,25 +1,22 @@
 import sys,os
 sys.path.append(os.path.split(__file__)[0])
-from pathlib import Path
-p = Path(__file__).parents[1]
-print(p)
-from p.components import cameras,simulator
+from ciao import cameras,simulator
 import ciao_config as ccfg
 from matplotlib import pyplot as plt
 import numpy as np
-from p.components import tools
+from ciao import tools
 
 # Call this with 'python record_reference_coordinages.py output_filename.txt'
 
 if len(sys.argv)<2:
-    print("Call this with 'python record_reference_coordinages.py output_filename.txt,")
-    print("  where output_filename.txt is the file in which the reference coordinates are saved.")
+    print "Call this with 'python record_reference_coordinages.py output_filename.txt,"
+    print "  where output_filename.txt is the file in which the reference coordinates are saved."
     sys.exit()
     
 try:
     N = int(ccfg.reference_n_measurements)
 except Exception as e:
-    print(e)
+    print e
     N = 1
 
 if ccfg.simulate:
