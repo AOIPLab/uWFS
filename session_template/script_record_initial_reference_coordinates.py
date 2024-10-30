@@ -2,12 +2,12 @@ import sys,os
 sys.path.append(os.path.split(__file__)[0])
 from pathlib import Path
 p = Path(__file__).parents[1]
-print(p)
-from p.components import cameras,simulator
+comp_path = Path(os.path.join(p,"components"))
+from components import cameras,simulator
 import ciao_config as ccfg
 from matplotlib import pyplot as plt
 import numpy as np
-from p.components import tools
+from components import tools
 
 # Call this with 'python record_reference_coordinages.py output_filename.txt'
 
