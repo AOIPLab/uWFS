@@ -118,21 +118,21 @@ class StripChart(QWidget):
 
         self.pen = QPen()
         self.pen.setColor(QColor(*color))
-        self.pen.setWidth(line_width)
+        self.pen.setWidth(int(line_width)) # (line_width) --JDR attempting to fix QT errors
 
         self.ytick_pen = QPen()
         self.ytick_pen.setColor(QColor(0,0,0,255))
-        self.ytick_pen.setWidth(0.5)
+        self.ytick_pen.setWidth(1) #(0.5) --JDR attempting to fix qt errors
         self.ytick_pen.setStyle(Qt.DotLine)
 
         self.xtick_pen = QPen()
         self.xtick_pen.setColor(QColor(0,0,0,255))
-        self.xtick_pen.setWidth(2.0)
+        self.xtick_pen.setWidth(2) # (2.0) --JDR 
         self.xtick_pen.setStyle(Qt.SolidLine)
 
         self.hline_pen = QPen()
         self.hline_pen.setColor(QColor(0,0,0,255))
-        self.hline_pen.setWidth(1.0)
+        self.hline_pen.setWidth(1) # (1.0) --JDR
         self.hline_pen.setStyle(Qt.SolidLine)
 
         self.painter = QPainter()
@@ -167,22 +167,27 @@ class StripChart(QWidget):
         temp = self.scale_y(np.array(list(self.buf[self.buffer_current_index:])+list(self.buf[:self.buffer_current_index])))
 
         for yt in self.yticks:
-            self.painter.drawLine(QLine(0,self.scale_y(yt),self.buffer_length*self.xscale,self.scale_y(yt)))
+            #self.painter.drawLine(QLine(0,self.scale_y(yt),self.buffer_length*self.xscale,self.scale_y(yt))) # added int() --JDR
+            self.painter.drawLine(QLine(0,int(self.scale_y(yt)),int(self.buffer_length*self.xscale),int(self.scale_y(yt))))
+
+
 
 
         self.painter.setPen(self.hline_pen)
         for hline in self.hlines:
-            self.painter.drawLine(QLine(0,self.scale_y(hline),self.buffer_length*self.xscale,self.scale_y(hline)))
+            #self.painter.drawLine(QLine(0,self.scale_y(hline),self.buffer_length*self.xscale,self.scale_y(hline))) # added int() --JDR
+            self.painter.drawLine(QLine(0,int(self.scale_y(hline)),int(self.buffer_length*self.xscale),int(self.scale_y(hline))))
+
 
 
         self.painter.setPen(self.pen)
             
         for idx in range(self.buffer_length-1):
-            x1 = (idx)*self.xscale
-            x2 = (idx+1)*self.xscale
+            x1 = int((idx)*self.xscale) # added int() --JDR
+            x2 = int((idx+1)*self.xscale)
 
-            y1 = temp[idx]
-            y2 = temp[idx+1]
+            y1 = int(temp[idx])
+            y2 = int(temp[idx+1])
             
             self.painter.drawLine(QLine(x1,y1,x2,y2))
 
@@ -191,11 +196,11 @@ class StripChart(QWidget):
             
             if idx%interval==0:
                 self.painter.setPen(self.xtick_pen)
-                self.painter.drawLine(QLine(
-                    (x1-self.buffer_current_index*self.xscale)%(self.buffer_length*self.xscale),
-                    self.xtick0,
-                    (x1-self.buffer_current_index*self.xscale)%(self.buffer_length*self.xscale),
-                    self.xtick1))
+                self.painter.drawLine(QLine( # added int() ofr all 4 args -JDR
+                    int((x1-self.buffer_current_index*self.xscale)%(self.buffer_length*self.xscale)),
+                    int(self.xtick0),
+                    int((x1-self.buffer_current_index*self.xscale)%(self.buffer_length*self.xscale)),
+                    int(self.xtick1)))
                 self.painter.setPen(self.pen)
             
             #if True:#20<self.buffer_current_index<80:
@@ -231,12 +236,12 @@ class Overlay(QWidget):
         self.coords = coords
         self.pen = QPen()
         self.pen.setColor(QColor(*color))
-        self.pen.setWidth(thickness)
+        self.pen.setWidth(int(thickness)) # (thickness) --JDR attempting to fix QT errors
 
         err_color = (color[2],color[1],color[0],color[3])
         self.err_pen = QPen()
         self.err_pen.setColor(QColor(*err_color))
-        self.err_pen.setWidth(thickness*2)
+        self.err_pen.setWidth(int(thickness*2)) # (thickness*2) --JDR attempting to fix QT errors
 
         self.mode = mode
         self.visible = visible
@@ -255,7 +260,7 @@ class Overlay(QWidget):
             painter.setPen(self.pen)
             for index,(x1,x2,y1,y2) in enumerate(self.coords):
                 if active[index]:
-                    painter.drawLine(QLine(x1/d,y1/d,x2/d,y2/d))
+                    painter.drawLine(QLine(int(x1/d),int(y1/d),int(x2/d),int(y2/d))) # added int() --JDR
             painter.end()
         elif self.mode=='rects':
             painter = QPainter()
@@ -268,7 +273,7 @@ class Overlay(QWidget):
                     painter.setPen(self.pen)
                 width = x2-x1
                 height = y2-y1
-                painter.drawRect(x1/d,y1/d,width/d,height/d)
+                painter.drawRect(int(x1/d),int(y1/d),int(width/d),int(height/d)) # added int() --JDR
             painter.end()
             
 class ZoomDisplay(QWidget):
@@ -426,7 +431,7 @@ class ZoomDisplay(QWidget):
             self.sized = True
         try:
             cmin,cmax = self.display_clim
-            bmp = np.round(np.clip((data.astype(np.float)-cmin)/(cmax-cmin+eps),0,1)*255).astype(np.uint8)
+            bmp = np.round(np.clip((data.astype(float)-cmin)/(cmax-cmin+eps),0,1)*255).astype(np.uint8)
             self.sy,self.sx = bmp.shape
             n_bytes = bmp.nbytes
             bytes_per_line = int(n_bytes/self.sy)
@@ -717,8 +722,8 @@ class UI(QWidget):
         self.stripchart_error = StripChart(ylim=ccfg.error_plot_ylim,ytick_interval=ccfg.error_plot_ytick_interval,print_function=ccfg.error_plot_print_func,hlines=[0.0,ccfg.wavelength_m/14.0],buffer_length=ccfg.error_plot_buffer_length)
         self.stripchart_error.setAlignment(Qt.AlignRight)
         
-        #self.stripchart_defocus = StripChart(ylim=ccfg.zernike_plot_ylim,ytick_interval=ccfg.zernike_plot_ytick_interval,print_function=ccfg.zernike_plot_print_func,buffer_length=ccfg.zernike_plot_buffer_length)
-        #self.stripchart_defocus.setAlignment(Qt.AlignRight)
+        self.stripchart_defocus = StripChart(ylim=ccfg.zernike_plot_ylim,ytick_interval=ccfg.zernike_plot_ytick_interval,print_function=ccfg.zernike_plot_print_func,buffer_length=ccfg.zernike_plot_buffer_length)
+        self.stripchart_defocus.setAlignment(Qt.AlignRight)
 
         self.lbl_tip = QLabel()
         self.lbl_tip.setAlignment(Qt.AlignRight)
@@ -777,7 +782,7 @@ class UI(QWidget):
         column_2.addWidget(self.pb_quit)
         
         column_2.addWidget(self.stripchart_error)
-        #column_2.addWidget(self.stripchart_defocus)
+        column_2.addWidget(self.stripchart_defocus)
         column_2.addWidget(self.lbl_tip)
         column_2.addWidget(self.lbl_tilt)
         column_2.addWidget(self.lbl_cond)
@@ -864,7 +869,7 @@ class UI(QWidget):
         
         #self.lbl_error.setText(ccfg.wavefront_error_fmt%(sensor.error*1e9))
         self.stripchart_error.setValue(sensor.error)
-        #self.stripchart_defocus.setValue(sensor.zernikes[4]*ccfg.beam_diameter_m)
+        self.stripchart_defocus.setValue(sensor.zernikes[4]*ccfg.beam_diameter_m)
         
         self.lbl_tip.setText(ccfg.tip_fmt%(sensor.tip*1000000))
         self.lbl_tilt.setText(ccfg.tilt_fmt%(sensor.tilt*1000000))

@@ -20,10 +20,16 @@ try:
     except ImportError:
         configure_path = None
     
-    from thorlabs_tsi_sdk.tl_camera import TLCameraSDK 
+    from thorlabs_tsi_sdk.tl_camera import TLCameraSDK
     from thorlabs_tsi_sdk.tl_camera_enums import SENSOR_TYPE
 except Exception as e:
         print(e)
+
+# try:
+#     from thorcam.camera import ThorCam
+# except Exception as e:
+#     print(e)
+    
 
 try:
     from pyvcam import pvc
@@ -74,6 +80,61 @@ class PVCam:
 
 
 
+# class MyThorcam(ThorCam):
+#     def __init__(self,timeout=500):
+#         self.sdk = TLCameraSDK()
+#         cameralist = self.sdk.discover_available_cameras()
+#         if len(cameralist) == 0:
+#             print("Error: no cameras detected!")
+
+#         self.camera = self.sdk.open_camera(cameralist[0])
+#         #  setup the camera for continuous acquisition
+#         self.camera.frames_per_trigger_zero_for_unlimited = 0
+#         self.camera.image_poll_timeout_ms = 2000  # 2 second timeout
+#         self.camera.arm(2)
+#         self.camera.exposure_time_us = ccfg.camera_exposure_us #5000
+
+#         # save these values to place in our custom TIFF tags later
+#         bit_depth = self.camera.bit_depth
+#         exposure = self.camera.exposure_time_us
+
+#         # need to save the image width and height for color processing
+#         image_width = self.camera.image_width_pixels
+#         image_height = self.camera.image_height_pixels
+#         print(image_width)
+#         print(image_height)
+#         self.image = None
+    
+#     def get_image(self):
+#         self.camera.issue_software_trigger()
+#         frame = self.camera.get_pending_frame_or_null()
+#         #self.image = frame.image_buffer
+#         self.image = frame.image_buffer.astype(np.int16)
+#         return self.image
+        
+
+
+#     def close(self):
+#         self.camera.disarm()
+#         return
+
+#     def set_exposure(self,exposure_us):
+#         self.camera.exposure_time_us = exposure_us
+#         return
+
+#     def get_exposure(self):
+#         return self.camera.exposure_time_us
+    
+#     def received_camera_response(self, msg, value):
+#         super(MyThorCam, self).received_camera_response(msg, value)
+#         if msg == 'image':
+#             return
+#         print('Received "{}" with value "{}"'.format(msg, value))
+#     def got_image(self, image, count, queued_count, t):
+#         print('Received image "{}" with time "{}" and counts "{}", "{}"'
+#               .format(image, t, count, queued_count))
+
+
 class TLCamera:
     def __init__(self,timeout=500):
         self.sdk = TLCameraSDK()
@@ -86,7 +147,7 @@ class TLCamera:
         self.camera.frames_per_trigger_zero_for_unlimited = 0
         self.camera.image_poll_timeout_ms = 2000  # 2 second timeout
         self.camera.arm(2)
-        self.camera.exposure_time_us = 100
+        self.camera.exposure_time_us = ccfg.camera_exposure_us #5000
 
         # save these values to place in our custom TIFF tags later
         bit_depth = self.camera.bit_depth
@@ -102,8 +163,10 @@ class TLCamera:
     def get_image(self):
         self.camera.issue_software_trigger()
         frame = self.camera.get_pending_frame_or_null()
-        self.image = frame.image_buffer
+        #self.image = frame.image_buffer
+        self.image = frame.image_buffer.astype(np.int16)
         return self.image
+        
 
 
     def close(self):

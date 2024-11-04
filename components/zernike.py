@@ -41,10 +41,10 @@ class Zernike:
     def j2nm(self,j):
         n = np.ceil((-3+np.sqrt(9+8*j))/2)
         m = 2*j-n*(n+2)
-        return np.int(n),np.int(m)
+        return int(n),int(m)
 
     def nm2j(self,n,m):
-        return np.int(n*(n+1)/2.0+(n+m)/2.0)
+        return int(n*(n+1)/2.0+(n+m)/2.0)
 
     def zeqn(self,n,m,kind='h',forceRecompute=False):
         """Return parameters sufficient for specifying a Zernike term
@@ -120,20 +120,20 @@ class Zernike:
         else:
             outerCoef = 2*(n+1)
         
-        srange = range(np.int((n-absm)/2+1))
+        srange = range(int((n-absm)/2+1))
 
         cdict = {}
 
         for s in srange:
-            jrange = range(np.int(((n-absm)/2)-s+1))
+            jrange = range(int(((n-absm)/2)-s+1))
             for j in jrange:
 
                 # Subtract 1 from absm to determine range,
                 # only when m<0.
                 if m<0:
-                    krange = range(np.int((absm-1)/2+1))
+                    krange = range(int((absm-1)/2+1))
                 else:
-                    krange = range(np.int(absm/2+1))
+                    krange = range(int(absm/2+1))
 
                 for k in krange:
                     # If m==0, k must also be 0;
