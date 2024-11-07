@@ -1,3 +1,0 @@
-#!/bin/bash
-gcc -g -fPIC -c -o test.o test.c
-ld -shared -o libtest.so test.o
