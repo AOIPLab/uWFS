@@ -13,10 +13,6 @@ log/
 *.mat
 *.wav
 
-# Local sessions #
-##################
-local_session_*/
-
 # Obsolete files #
 ##################
 obs/

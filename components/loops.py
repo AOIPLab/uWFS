@@ -78,7 +78,7 @@ class Loop(QObject):
     def start(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
-        self.timer.start(1.0/self.update_rate*1000.0)
+        self.timer.start(int(1.0/self.update_rate*1000.0)) # added int() --JDR
         self.started.emit()
         
     def has_poke(self):
@@ -171,9 +171,11 @@ class Loop(QObject):
                     slope_vec = np.hstack((xs,ys))
                     command = self.gain * np.dot(self.poke.ctrl,slope_vec)
 
+                    #command = self.mirror.get_command()*(1-self.loss) - command
                     command = self.mirror.get_command()*(1-self.loss) - command
                     self.mirror.set_command(command)
                     self.mirror.update()
+                    #print(command)
 
                     if self.profile_update_method:
                         self.update_timer.tick('mirror.update')
@@ -406,6 +408,7 @@ class SerialLoop(QObject):
                 command = self.gain * np.dot(self.poke.ctrl,slope_vec)
                 command = self.mirror.get_command()*(1-self.loss) - command
                 self.mirror.set_command(command)
+                print(command)
 
                 if self.verbose>=1:
                     if command.max()>ccfg.mirror_command_max*.95:
